@@ -6,4 +6,7 @@
 \usage{
   API_PAT()
 }
+\description{
+API-PAT: Applied Pharmaceutical Innovation PK Analysis Tool designed to perform Dose-Response and Non-Compartmental Analysis.
+}
 
