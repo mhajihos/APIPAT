@@ -1,5 +1,5 @@
-# APIPAT
-API-PAT:Applied Pharmaceutical Innovation PK Analysis Tool
+# APIPAT Applied Pharmaceutical Innovation PK Analysis Tool
+API-PAT: Applied Pharmaceutical Innovation PK Analysis Tool designed to perform Dose-Response and Non-Compartmental Analysis.
 
 ## Installation
 ```
