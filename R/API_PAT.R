@@ -3,8 +3,7 @@ API_PAT=function()
 
 Pack=c("shiny","shinythemes","gridExtra","ggplot2","ggpubr",
          "readr","reshape2","plyr","dplyr","pkr","PKNCA",
-         "erer","stringr","psych","DescTools","geepack",
-         "broom","mapview","shinyalert","Cairo","shinydashboard",
+         "erer","stringr","psych","DescTools","mapview","shinyalert","Cairo","shinydashboard",
          "shinydashboardPlus","shinyWidgets","officer","knitr")
 suppressPackageStartupMessages(lapply(Pack, require, character.only = TRUE))
 
