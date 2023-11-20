@@ -1,0 +1,37 @@
+Package: APIPAT
+Type: Package
+Title: API-PAT:Applied Pharmaceutical Innovation PK Analysis Tool
+Version: 0.1.0
+Author: Morteza Hajihosseini
+Maintainer: morteza.hajihosseini@appliedpharma.ca
+Description: API-PAT:Applied Pharmaceutical Innovation PK Analysis Tool designed to perform Dose-Response and Non-Compartmental Analysis.
+License: API:Applied Pharmaceutical Innovation
+Encoding: UTF-8
+LazyData: true
+Imports:
+    shiny,
+    shinythemes,
+    gridExtra,
+    ggplot2,
+    ggpubr,
+    readr,
+    reshape2,
+    plyr,
+    dplyr,
+    pkr,
+    PKNCA,
+    erer,
+    stringr,
+    psych,
+    DescTools,
+    geepack,
+    broom,
+    mapview,
+    shinyalert,
+    Cairo,
+    shinydashboard,
+    shinydashboardPlus,
+    shinyWidgets,
+    officer,
+    knitr
+RoxygenNote: 7.2.3
