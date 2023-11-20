@@ -562,7 +562,7 @@ write.csv(TableInput2(),con, row.names = FALSE)
 })
 
 output$text1 <- renderUI({
-    HTML(paste("API-PAT:Applied Pharmaceutical Innovation PK Analysis Tool",sep = '<br/>'))
+    HTML(paste("API-PAT:Applied Pharmaceutical Innovation PK Analysis Tool. API-PAT designed to perform Dose-Response and Non-Compartmental Analysis.",sep = '<br/>'))
   })
 
 
