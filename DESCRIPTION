@@ -24,8 +24,6 @@ Imports:
     stringr,
     psych,
     DescTools,
-    geepack,
-    broom,
     mapview,
     shinyalert,
     Cairo,
