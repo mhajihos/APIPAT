@@ -1,5 +1,6 @@
 # APIPAT
 API-PAT: Applied Pharmaceutical Innovation PK Analysis Tool designed to perform Dose-Response and Non-Compartmental Analysis.
+**Require R 4.3.1 or higher.**
 
 ## Installation
 ```
