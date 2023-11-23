@@ -3,7 +3,7 @@ API_PAT=function()
 
 Pack=c("shiny","shinythemes","gridExtra","ggplot2","ggpubr",
          "readr","reshape2","plyr","dplyr","pkr","PKNCA",
-         "erer","stringr","psych","DescTools","mapview","shinyalert","Cairo","shinydashboard",
+         "erer","stringr","psych","DescTools","mapview","shinyalert","shinydashboard",
          "shinydashboardPlus","shinyWidgets","officer","knitr")
 suppressPackageStartupMessages(lapply(Pack, require, character.only = TRUE))
 
@@ -35,7 +35,7 @@ return(data_sum)
 
 
 #DRA_plot
-DRA_plot=function(X,Y,Grp,Col,Data,Fac1,Fac2,Xlim,logscale=FALSE){
+DRA_plot=function(X,Y,Grp,Col,Data,Fac1,Fac2,Xlim,LL,UL,logscale=FALSE){
 attach(Data)
 
 if(logscale==TRUE)
@@ -49,8 +49,10 @@ P1=ggplot(Data,
 		ylab(paste0("Average Concentration in Log Scale"))+ 
 		facet_wrap(~Data[,Fac1],ncol=2)+scale_y_log10()+theme_classic()+
 		theme(axis.text.x = element_text(angle = 90, hjust=0.5, size=6))+labs(color="Dose",shape="Dose")+
-		scale_x_continuous(limits = c(0,max(Data[,Xlim])),breaks=Data[,Xlim],expand = c(0, 0))+
-		theme(panel.grid = element_blank(),panel.border = element_blank())
+		scale_x_continuous(limits = c(0,max(Data[,Xlim]+3)),breaks=Data[,Xlim],expand = c(0, 0))+
+		theme(panel.grid = element_blank(),panel.border = element_blank())+
+		geom_errorbar(aes(ymin=LL, ymax=UL), width=.2,
+                 position=position_dodge(0.05))
 }else {
 		P1=ggplot(Data,
 		aes(x=as.numeric(X),y=Y,group=Grp,color=factor(Col)))+
@@ -58,8 +60,10 @@ P1=ggplot(Data,
 		ylab(paste0("Average Concentration in Log Scale"))+ theme_classic()+
 		facet_wrap(~Data[,Fac1]+Data[,Fac2],ncol=2)+scale_y_log10()+
 		theme(axis.text.x = element_text(angle = 90, hjust=0.5, size=6))+labs(color="Dose",shape="Dose")+
-		scale_x_continuous(limits = c(0,max(Data[,Xlim])),breaks=Data[,Xlim],expand = c(0, 0))+
-		theme(panel.grid = element_blank(),panel.border = element_blank())
+		scale_x_continuous(limits = c(0,max(Data[,Xlim]+3)),breaks=Data[,Xlim],expand = c(0, 0))+
+		theme(panel.grid = element_blank(),panel.border = element_blank())+
+		geom_errorbar(aes(ymin=LL, ymax=UL), width=.2,
+                 position=position_dodge(0.05))
 	}
 }else if(logscale==FALSE){
 
@@ -71,8 +75,10 @@ P1=ggplot(Data,
 		ylab(paste0("Average Concentration"))+theme_classic()+
 		facet_wrap(~Data[,Fac1],ncol=2)+
 		theme(axis.text.x = element_text(angle = 90, hjust=0.5, size=6))+labs(color="Dose",shape="Dose")+
-		scale_x_continuous(limits = c(0,max(Data[,Xlim])),breaks=Data[,Xlim],expand = c(0, 0))+
-		theme(panel.grid = element_blank(),panel.border = element_blank())
+		scale_x_continuous(limits = c(0,max(Data[,Xlim]+3)),breaks=Data[,Xlim],expand = c(0, 0))+
+		theme(panel.grid = element_blank(),panel.border = element_blank())+
+		geom_errorbar(aes(ymin=LL, ymax=UL), width=.2,
+                 position=position_dodge(0.05))
 }else {
 		P1=ggplot(Data,
 		aes(x=as.numeric(X),y=Y,group=Grp,color=factor(Col)))+
@@ -80,8 +86,10 @@ P1=ggplot(Data,
 		ylab(paste0("Average Concentration"))+ theme_classic()+
 		facet_wrap(~Data[,Fac1]+Data[,Fac2],ncol=2)+
 		theme(axis.text.x = element_text(angle = 90,hjust=0.5, size=6))+labs(color="Dose",shape="Dose")+
-		scale_x_continuous(limits = c(0,max(Data[,Xlim])),breaks=Data[,Xlim],expand = c(0, 0))+
-		theme(panel.grid = element_blank(),panel.border = element_blank())
+		scale_x_continuous(limits = c(0,max(Data[,Xlim]+3)),breaks=Data[,Xlim],expand = c(0, 0))+
+		theme(panel.grid = element_blank(),panel.border = element_blank())+
+		geom_errorbar(aes(ymin=LL, ymax=UL), width=.2,
+                 position=position_dodge(0.05))
 	}
 
 }
@@ -304,40 +312,68 @@ observe({
 
 
 
+
 #DRA PLOTS
 PlotInput1 <- reactive({
 data=my_data()
 data=data.frame(data)
 data$CONC=as.numeric(data[,input$Con])
 data$Time=as.numeric(data[,input$Time])
+data$Dose=as.numeric(data[,input$Dose])
+
 
 if(input$Stratify22=="Log Scale")
 {
 
-if(input$Stratify2==input$Dose)
-{
-	Plot=DRA_plot(X=data[,input$Time],Y=CONC,Grp=factor(data[,input$Dose]),
-				Col=factor(data[,input$Dose]),Data=data,Fac1=sort(input$Stratify2),
-				Fac2="NULL",Xlim="Time",logscale=TRUE)
-}else{
-	Plot=DRA_plot(X=data[,input$Time],Y=CONC,Grp=factor(data[,input$Dose]),
-				Col=factor(data[,input$Dose]),Data=data,Fac1=sort(input$Stratify2),
-				Fac2=input$Dose,Xlim="Time",logscale=TRUE)
-	}
+	if(input$Stratify2==input$Dose)
+		{
+			Summ=data_summary(data=data,varname="CONC",group=c("Time","Dose"))
+			Summ$Arithmetic_Mean[is.nan(Summ$Arithmetic_Mean)]=0
+			Summ$SD[is.na(Summ$SD)]=0
+			Summ$LL=Summ$Arithmetic_Mean-Summ$SD
+			Summ$LL[Summ$LL<0]=0
+			Summ$UL=Summ$Arithmetic_Mean+Summ$SD
 
+
+				Plot=DRA_plot(X=Time,Y=Arithmetic_Mean,Grp=Dose,
+					Col=Dose,Data=Summ,Fac1="Dose",
+					Fac2="NULL",Xlim="Time",LL=LL,UL=UL,logscale=TRUE)
+		}else{
+			Summ=data_summary(data=data,varname="CONC",group=c("Time","Dose",input$Stratify2))
+			Summ$Arithmetic_Mean[is.nan(Summ$Arithmetic_Mean)]=0
+			Summ$SD[is.na(Summ$SD)]=0
+			Summ$LL=Summ$Arithmetic_Mean-Summ$SD
+			Summ$LL[Summ$LL<0]=0
+			Summ$UL=Summ$Arithmetic_Mean+Summ$SD
+				Plot=DRA_plot(X=Time,Y=Arithmetic_Mean,Grp=Dose,
+					Col=Dose,Data=Summ,Fac1="Dose",
+					Fac2=input$Stratify2,Xlim="Time",LL=LL,UL=UL,logscale=TRUE)
+			}
 }else if(input$Stratify22=="Normal Scale")
 {
 
-if(input$Stratify2==input$Dose)
-{
-	Plot=DRA_plot(X=data[,input$Time],Y=CONC,Grp=factor(data[,input$Dose]),
-				Col=factor(data[,input$Dose]),Data=data,Fac1=sort(input$Stratify2),
-				Fac2="NULL",Xlim="Time",logscale=FALSE)
-}else{
-	Plot=DRA_plot(X=data[,input$Time],Y=CONC,Grp=factor(data[,input$Dose]),
-				Col=factor(data[,input$Dose]),Data=data,Fac1=sort(input$Stratify2),
-				Fac2=input$Dose,Xlim="Time",logscale=FALSE)
-	}
+	if(input$Stratify2==input$Dose)
+	{
+			Summ=data_summary(data=data,varname="CONC",group=c("Time","Dose"))
+			Summ$Arithmetic_Mean[is.nan(Summ$Arithmetic_Mean)]=0
+			Summ$SD[is.na(Summ$SD)]=0
+			Summ$LL=Summ$Arithmetic_Mean-Summ$SD
+			Summ$LL[Summ$LL<0]=0
+			Summ$UL=Summ$Arithmetic_Mean+Summ$SD
+				Plot=DRA_plot(X=Time,Y=Arithmetic_Mean,Grp=Dose,
+					Col=Dose,Data=Summ,Fac1="Dose",
+					Fac2="NULL",Xlim="Time",LL=LL,UL=UL,logscale=FALSE)
+	}else{
+			Summ=data_summary(data=data,varname="CONC",group=c("Time","Dose",input$Stratify2))
+			Summ$Arithmetic_Mean[is.nan(Summ$Arithmetic_Mean)]=0
+			Summ$SD[is.na(Summ$SD)]=0
+			Summ$LL=Summ$Arithmetic_Mean-Summ$SD
+			Summ$LL[Summ$LL<0]=0
+			Summ$UL=Summ$Arithmetic_Mean+Summ$SD
+				Plot=DRA_plot(X=Time,Y=Arithmetic_Mean,Grp=Dose,
+					Col=Dose,Data=Summ,Fac1="Dose",
+					Fac2=input$Stratify2,Xlim="Time",logscale=FALSE)
+		}
 }
 
 print(Plot)
@@ -580,4 +616,3 @@ output$text1 <- renderUI({
 shinyApp(ui = ui, server = server)
 
 }
-
